@@ -15,7 +15,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.name.version>v1</project.name.version>
 		<project.gatekeeper.type>strict</project.gatekeeper.type>
-		<project.name.suffix>-${mule.env.lower}</project.name.suffix>
+		<project.name.suffix>-${project.env.lower}</project.name.suffix>
 		<project.env>LOCAL</project.env>
 		<project.secure.key>0123456701234567</project.secure.key>
 		
@@ -68,7 +68,7 @@
 		<profile>
 			<id>build_non_prod</id>
 			<properties>
-				<project.name.suffix>-${mule.env.lower}</project.name.suffix>
+				<project.name.suffix>-${project.env.lower}</project.name.suffix>
 			</properties>
 		</profile>
 		<profile>
@@ -216,13 +216,13 @@
 				<version>3.2.0</version>
 				<executions>
 					<execution>
-						<id>mule.env-lowercase-variable</id>
+						<id>project.env-lowercase-variable</id>
 						<phase>initialize</phase>
 						<goals>
 							<goal>regex-property</goal>
 						</goals>
 						<configuration>
-							<name>mule.env.lower</name>
+							<name>project.env.lower</name>
 							<value>${project.env}</value>
 							<regex>${project.env}</regex>
 							<replacement>${project.env}</replacement>
