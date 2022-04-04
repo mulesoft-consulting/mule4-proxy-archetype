@@ -1,0 +1,8 @@
+{
+	"secureProperties": [
+		"anypoint.platform.client_id",
+		"anypoint.platform.client_secret",
+		"project.secure.key"
+	],
+	"minMuleVersion": "4.3.0"
+}

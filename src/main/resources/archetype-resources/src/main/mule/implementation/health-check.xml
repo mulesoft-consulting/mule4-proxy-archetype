@@ -1,0 +1,31 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="get:${symbol_escape}health-check:imp" doc:id="ef3ab189-b995-4a3d-94e9-b07f9201b021" >
+		<json-logger:logger doc:name="Logger" doc:id="468a4889-10aa-4d01-9f78-fcc685a234b7" config-ref="JSON_Logger_Config" message="health-check">
+			<json-logger:content ><![CDATA[${symbol_pound}[import modules::JSONLoggerModule output application/json ---
+{
+    status: "ok"
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<ee:transform doc:name="response_data" doc:id="1ca5cf94-e2ec-4619-84e7-b81bb6561e65">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="response_data" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: "OK"
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+</mule>

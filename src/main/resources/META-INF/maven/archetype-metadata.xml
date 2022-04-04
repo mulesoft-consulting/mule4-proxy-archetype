@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor xsi:schemaLocation="https://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0 http://maven.apache.org/xsd/archetype-descriptor-1.1.0.xsd" name="x-api-proxy" xmlns="https://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <requiredProperties>
+    <requiredProperty key="description">
+      <defaultValue>This is a mule4 proxy api</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="controlPlane">
+      <!-- Supported Values : us | eu -->
+      <defaultValue>us</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="region">
+      <!-- https://docs.mulesoft.com/mule-runtime/4.4/deploy-to-cloudhub -->
+      <defaultValue>us-east-1</defaultValue>
+    </requiredProperty>
+    <requiredProperty key="deployTarget"> 
+      <!-- Supported Values : rtf | cloudhub -->
+     	<defaultValue>cloudhub</defaultValue>
+    </requiredProperty>
+
+    <requiredProperty key="deployAuthType">
+      <!-- Supported Values : server | authToken -->
+      <defaultValue>server</defaultValue>
+    </requiredProperty>
+
+    <requiredProperty key="scmtype">
+      <!-- Supported Values : git | svn -->
+      <defaultValue>git</defaultValue>
+    </requiredProperty>
+
+    <requiredProperty key="scmRepository">
+      <defaultValue>git@github.com:user/repo</defaultValue>
+    </requiredProperty>
+
+    <requiredProperty key="pluginJsonLogger">
+      <!-- Values should be the org id where the JSON Logger plugin is stored -->
+      <defaultValue></defaultValue>
+    </requiredProperty>
+    <requiredProperty key="pluginJsonLoggerVersion">
+      <defaultValue>2.0.1</defaultValue>
+    </requiredProperty>
+
+  </requiredProperties>
+
+
+  <fileSets>
+    <fileSet filtered="true" encoding="UTF-8">
+      <directory>src/main/resources</directory>
+      <includes>
+        <include>**/*.xml</include>
+      </includes>
+    </fileSet>
+    <fileSet filtered="true" encoding="UTF-8">
+      <directory>src/main/mule</directory>
+      <includes>
+        <include>**/*.xml</include>
+      </includes>
+    </fileSet>
+    <fileSet encoding="UTF-8">
+      <directory>src/main/resources</directory>
+      <includes>
+        <include>**/*.wev</include>
+        <include>**/*.yaml</include>
+      </includes>
+    </fileSet>
+    <fileSet filtered="true" encoding="UTF-8">
+      <directory>src/test/resources</directory>
+      <includes>
+        <include>**/*.xml</include>
+      </includes>
+    </fileSet>
+    <fileSet encoding="UTF-8">
+      <directory>.github/workflows</directory>
+      <includes>
+        <include>**/*.yml</include>
+      </includes>
+    </fileSet>
+    <fileSet encoding="UTF-8">
+      <directory>.settings</directory>
+      <includes>
+        <include>**/*.prefs</include>
+      </includes>
+    </fileSet>
+    <fileSet filtered="true" encoding="UTF-8">
+      <directory></directory>
+      <includes>
+        <include>.classpath</include>
+        <include>.project</include>
+      </includes>
+    </fileSet>
+    <fileSet encoding="UTF-8">
+      <directory></directory>
+      <includes>
+        <include>README.md</include>
+        <include>.gitignore</include>
+        <include>Jenkinsfile</include>
+        <include>mule-artifact.json</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+</archetype-descriptor>

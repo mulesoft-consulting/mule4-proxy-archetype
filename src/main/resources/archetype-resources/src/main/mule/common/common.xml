@@ -1,0 +1,109 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="init_variables" doc:id="52b53121-3973-476d-b8ee-6c88d335a7e5" >
+		<ee:transform doc:name="attributes_original" doc:id="152079ea-005b-4d3c-beca-d22e86cb3327" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="attributes_original" ><![CDATA[%dw 2.0
+output application/java
+---
+attributes]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="ref_date" doc:id="5ae4e8c7-583b-4bc6-9ea6-b5612b355bd9" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="ref_date" ><![CDATA[%dw 2.0
+output application/java
+---
+now() >> "UTC"]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="response_header" doc:id="3175033d-ded5-4907-8daa-5ef23d51d41e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="response_header" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "api_name": app.name,
+    "api_version": p("api_version"),
+    "correlation_id": correlationId,
+    "ref_date" : vars.ref_date
+    
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="response_data" doc:id="334e41dd-2540-4289-b3ba-6678d1e48fdd" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="response_data" ><![CDATA[%dw 2.0
+output application/json
+---
+{}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="response_error" doc:id="1a7805ce-0827-45a5-b288-7c5cf876f2c2" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="response_error" ><![CDATA[%dw 2.0
+output application/json
+---
+{}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="flow_start_ts" doc:id="46f07aa0-164a-45e9-9ec6-07d1d420adef" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="flow_start_ts" ><![CDATA[%dw 2.0
+import * from dw::util::Timer
+output application/java
+---
+currentMilliseconds() as Number]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+	<flow name="metric_http" doc:id="06aa9db8-2391-45d3-bce2-0659c57b7d5d" >
+		<!-- 		<logger level="INFO" doc:name="metric_http" doc:id="da82eaab-bba4-48b6-8977-467d99fea8d1" message='${symbol_pound}[%dw 2.0&${symbol_pound}10;import * from dw::util::Timer&${symbol_pound}10;output application/json&${symbol_pound}10;-&${symbol_pound}45;&${symbol_pound}45;&${symbol_pound}10;{&${symbol_pound}10;	correlationId: correlationId,&${symbol_pound}10;	appName: Mule::p("app_name"),&${symbol_pound}10;	version: p("api_version"),&${symbol_pound}10;	remoteAddress: vars.attributes_original.remoteAddress,&${symbol_pound}10;	requestUri: vars.attributes_original.requestUri,&${symbol_pound}10;	requestMethod: vars.attributes_original.method,&${symbol_pound}10;	clientId: vars.attributes_original.headers.client_id,&${symbol_pound}10;	httpStatus: vars.httpStatus,&${symbol_pound}10;	responseTime: ( currentMilliseconds() as Number ) - ( vars.flow_start_ts as Number )&${symbol_pound}10;}]'/> -->
+		<logger level="INFO" doc:name="Logger" doc:id="d269c6c6-51ff-4f62-b8e8-9f5f128ab1f7" message="${symbol_pound}[%dw 2.0&${symbol_pound}10;import * from dw::util::Timer&${symbol_pound}10;output application/json  &${symbol_pound}10;---&${symbol_pound}10;{&${symbol_pound}10;	remoteAddress: vars.attributes_original.remoteAddress,&${symbol_pound}10;	requestUri: vars.attributes_original.requestUri,&${symbol_pound}10;	requestMethod: vars.attributes_original.method,&${symbol_pound}10;	clientId: vars.attributes_original.headers.client_id,&${symbol_pound}10;	httpStatus: vars.httpStatus,&${symbol_pound}10;	responseTime: ( currentMilliseconds() as Number ) - ( vars.flow_start_ts as Number ) &${symbol_pound}10;}]"/>
+	</flow>
+	
+	<sub-flow name="log_management" doc:id="dc70f395-553b-4f5b-9b3c-788a05bb4308" >
+		<choice doc:name="Choice" doc:id="f7d31c5d-8431-4374-a36d-19e2372114a8">
+			<when expression='${symbol_pound}[vars.LOG_LEVEL == "DEBUG"]'>
+				<logger level="DEBUG" doc:name="DEBUG" doc:id="d48ea23e-7825-4326-a5db-e8691cb1887a" message="${symbol_pound}[vars.LOG_MESSAGE]" category="${symbol_dollar}{mule.logging.prefix}.logging" />
+			</when>
+			<when expression='${symbol_pound}[vars.LOG_LEVEL == "INFO"]'>
+				<logger level="INFO" doc:name="INFO" doc:id="1d7357c4-7e24-419a-bbf6-dd8ddf2244c5" message="${symbol_pound}[vars.LOG_MESSAGE]" category="${symbol_dollar}{mule.logging.prefix}.logging" />
+			</when>
+			<when expression='${symbol_pound}[vars.LOG_LEVEL == "WARN"]'>
+				<logger level="WARN" doc:name="WARN" doc:id="2fc39874-a2b2-407f-be24-133ccd4d04a7" message="${symbol_pound}[vars.LOG_MESSAGE]" category="${symbol_dollar}{mule.logging.prefix}.logging" />
+			</when>
+			<when expression='${symbol_pound}[vars.LOG_LEVEL == "ERROR"]'>
+				<logger level="ERROR" doc:name="ERROR" doc:id="533d6572-8546-449c-84e7-8b58acec1acb" message="${symbol_pound}[vars.LOG_MESSAGE]" category="${symbol_dollar}{mule.logging.prefix}.logging" />
+			</when>
+			<when expression='${symbol_pound}[vars.LOG_LEVEL == "TRACE"]'>
+				<logger level="TRACE" doc:name="TRACE" doc:id="6dd0ac0d-f4f6-4d54-b644-1852bd45bc6a" message="${symbol_pound}[vars.LOG_MESSAGE]" category="${symbol_dollar}{mule.logging.prefix}.logging" />
+			</when>
+			<when expression='${symbol_pound}[vars.LOG_LEVEL == "METRIC"]'>
+				<logger level="INFO" doc:name="METRIC" doc:id="c416c813-fc7a-4e50-93b4-d2cfddf8bcd6" message="${symbol_pound}[vars.LOG_MESSAGE]" category="${symbol_dollar}{mule.logging.prefix}.metric" />
+			</when>
+			<otherwise>
+				<logger level="WARN" doc:name="WARN" doc:id="bd6fa41d-9a54-484c-a2ad-33b457f55c0b" message="${symbol_pound}[vars.LOG_MESSAGE]" category="${symbol_dollar}{mule.logging.prefix}.logging" />
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

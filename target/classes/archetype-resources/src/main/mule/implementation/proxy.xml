@@ -1,0 +1,72 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<http:request-config name="HTTP_Request_configuration_Commercial_Pricing" doc:name="HTTP Request configuration" doc:id="96ebda80-138d-4e76-b81a-bdd787b45e82" basePath="${symbol_dollar}{proxy.base_path}">
+		<http:request-connection protocol="${symbol_dollar}{proxy.protocol}" host="${symbol_dollar}{proxy.host}" port="${symbol_dollar}{proxy.port}" connectionIdleTimeout="${symbol_dollar}{proxy.timeout}">
+			<tls:context >
+				<tls:trust-store insecure="true" />
+			</tls:context>
+		</http:request-connection>
+	</http:request-config>
+	<flow name="proxy" doc:id="5e611dd4-6ba5-420b-9d92-6cb802896d76" >
+		<ee:transform doc:name="Prepare" doc:id="5515b681-fe97-4f40-8b83-e1de02d2b989" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="inboundHeaders" ><![CDATA[%dw 2.0
+
+var list = Mule::p("proxy.inboundHeaders") splitBy ","
+
+output application/json
+---
+
+list as Array map ((item, index) -> (
+    if (attributes.headers[item] == null) {}
+    else {(item): attributes.headers[item]}
+)) reduce (${symbol_dollar}++${symbol_dollar}${symbol_dollar})]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="${symbol_pound}[attributes.method]" doc:name="proxy" doc:id="b5d7bec3-aa18-44bf-939c-e803c5ebc2dc" config-ref="HTTP_Request_configuration_Commercial_Pricing" path="${symbol_pound}[attributes.maskedRequestPath]" responseTimeout="60000">
+			<http:headers ><![CDATA[${symbol_pound}[vars.inboundHeaders]]]></http:headers>
+			<http:query-params ><![CDATA[${symbol_pound}[attributes.queryParams]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="c673e3c8-d6fa-4dcf-83bc-d44b41d27cc3" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="outboundHeaders" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.headers]]></ee:set-variable>
+				<ee:set-variable variableName="response_data" ><![CDATA[payload]]></ee:set-variable>
+				<ee:set-variable variableName="httpStatus" ><![CDATA[attributes.statusCode]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0135cd02-6df7-4fa3-8e23-7b3aebf8c1ee" >
+				<ee:transform doc:name="Transform Message" doc:id="46fda811-1113-4ad3-89ad-e00f60ee9ac9">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+output application/json
+---
+error.muleMessage.attributes.headers]]></ee:set-variable>
+						<ee:set-variable variableName="response_data" ><![CDATA[error.muleMessage.payload]]></ee:set-variable>
+						<ee:set-variable variableName="httpStatus" ><![CDATA[error.muleMessage.attributes.statusCode]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<raise-error doc:name="Raise error" doc:id="e2b239b4-75f5-4890-9f34-514aaf18a479" type="APP:PROXY" description="Proxy error."/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

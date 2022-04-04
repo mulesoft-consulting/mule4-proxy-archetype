@@ -1,0 +1,28 @@
+http:
+  port: "8081"
+  private: 
+    port: "8091"
+  
+https:
+  port: "8082"
+  private:
+    port: "8092"
+  
+
+logger:
+  masked_fields: "client_id,client_secret,password"
+  disabled_fields: ""
+
+proxy:
+  protocol: "HTTPS"
+  host: ""
+  port: "443"
+  timeout: "30000"
+  base_path: ""
+  inboundHeaders: "authorization,sessionId,source,accept,accept-encoding,content-type,content-length"
+
+base_path: ""
+
+
+api:
+  id: ""

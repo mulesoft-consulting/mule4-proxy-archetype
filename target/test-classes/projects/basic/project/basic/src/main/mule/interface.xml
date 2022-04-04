@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <apikit:config name="APIkit-Router" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" disableValidations="true" api="" />
+    <http:listener-config name="APIKit" doc:name="HTTP Listener config" doc:id="ba09f4b1-fa7b-444e-ab11-476f0119cf9e">
+        <http:listener-connection host="0.0.0.0" port="1111" />
+    </http:listener-config>
+    <http:listener-config name="httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
+    </http:listener-config>
+    <flow name="flow-init" doc:id="ec782a22-eff5-4e7d-ba82-b9cbd724627f">
+        <http:listener doc:name="Listener" doc:id="1db00d4f-7eed-49ab-8547-de95853ab53a" config-ref="APIKit" path="/not_used" />
+        <flow-ref doc:name="init_variables" doc:id="1f397cf5-bdc1-4f2b-ab2e-4a9bba88d9b3" name="init_variables" />
+        <apikit:router config-ref="APIkit-Router" />
+    </flow>
+    <flow name="flow-main">
+        <http:listener config-ref="httpListenerConfig" path="${base_path}/*">
+            <non-repeatable-stream />
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:body>
+                    <![CDATA[#[vars.response_data]]]>
+                </http:body>
+                <http:headers>
+                    <![CDATA[#[vars.outboundHeaders default {}]]]>
+                </http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>
+                    <![CDATA[#[vars.response_error]]]>
+                </http:body>
+                <http:headers>
+                    <![CDATA[#[vars.outboundHeaders default {}]]]>
+                </http:headers>
+            </http:error-response>
+        </http:listener>
+        <flow-ref doc:name="flow-init" doc:id="36b8e6c8-8a9e-48fd-b1b2-0ef5bda0edb7" name="flow-init" />
+        <flow-ref doc:name="metrics_http" doc:id="e9ed12ac-0bcb-4564-8b3f-1e2e7d0572e3" name="metric_http" />
+        <error-handler>
+            <on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="45a46b36-3fab-4e03-90a4-f1782f7b682d">
+                <flow-ref doc:name="metric_http" doc:id="119ee7eb-6e5a-4d40-bfaa-4ba6a080a98e" name="metric_http" />
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="get:\health-check:APIkit-Router">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload>
+                    <![CDATA[%dw 2.0
+output application/json
+---
+{
+  status: "ok"
+}]]>
+                </ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+</mule>
