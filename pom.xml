@@ -31,6 +31,6 @@
   <description>This archetype generates mule project for proxification use cases</description>
 
   <scm>
-    <developerConnection>scm:git:git@github.com:user/repo</developerConnection>
+    <developerConnection>scm:git:git@github.com:mulesoft-consulting/mule4-proxy-archetype.git</developerConnection>
   </scm>
 </project>
