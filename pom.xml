@@ -4,7 +4,7 @@
 
   <groupId>org.mulesoft</groupId>
   <artifactId>mule-proxy-archetype</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>maven-archetype</packaging>
 
   <name>mule-proxy-archetype</name>
@@ -32,5 +32,6 @@
 
   <scm>
     <developerConnection>scm:git:git@github.com:mulesoft-consulting/mule4-proxy-archetype.git</developerConnection>
+    <tag>v1.0.0</tag>
   </scm>
 </project>
