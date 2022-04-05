@@ -9,6 +9,7 @@
     <http:listener-config name="httpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="${symbol_dollar}{http.port}" />
     </http:listener-config>
+    <api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="bd20b1c0-19a8-429c-96cd-48629e01b9f8" flowRef="flow-main" />
     <flow name="flow-init" doc:id="ec782a22-eff5-4e7d-ba82-b9cbd724627f">
         <http:listener doc:name="Listener" doc:id="1db00d4f-7eed-49ab-8547-de95853ab53a" config-ref="APIKit" path="/not_used" />
         <flow-ref doc:name="init_variables" doc:id="1f397cf5-bdc1-4f2b-ab2e-4a9bba88d9b3" name="init_variables" />
