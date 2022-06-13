@@ -12,20 +12,7 @@
 
 ### Description
 
-This project is a simple template that integrates some of MuleSoft best practices. It provides a set of standard minimalistic tools that should help you start your project quickly/efficiently.
-
-  - **Plugins**
-      - mule-maven-plugin: enriched with a configuration that goes along with the Jenkinsfile (pipeline).
-      - maven-release-plugin: maven release management tool see the **Realse** section for more information on how to use it
-  - **Structure**
-      - Separation between interface and implementation
-      - Global configuration file
-      - Resources
-          - property files: 
-            - common property file containing environment variable common to all environments (sandbox to production) like http port, basePath etc ...
-            - a property file for each environment DEV/QA/UAT. You can add as many as you want (just don't forget to update the jenkinsfile)
-  - **CI/CD**
-      - Jenkins: a generic premade pipeline.
+${description}
 
 
 ## Logging

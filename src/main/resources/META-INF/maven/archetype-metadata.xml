@@ -86,14 +86,13 @@
       <includes>
         <include>.classpath</include>
         <include>.project</include>
+        <include>README.md</include>
       </includes>
     </fileSet>
     <fileSet encoding="UTF-8">
       <directory></directory>
       <includes>
-        <include>README.md</include>
         <include>.gitignore</include>
-        <include>Jenkinsfile</include>
         <include>mule-artifact.json</include>
       </includes>
     </fileSet>
